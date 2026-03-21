@@ -7,6 +7,7 @@ A Node.js backend application for managing products and integrating with Razorpa
 - Product management (create and retrieve products)
 - MongoDB database integration
 - RESTful API endpoints
+- CORS enabled for cross-origin requests
 - Environment-based configuration
 
 ## Tech Stack
@@ -14,6 +15,7 @@ A Node.js backend application for managing products and integrating with Razorpa
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
+- **CORS**: cors middleware for cross-origin resource sharing
 - **Environment**: dotenv for configuration
 
 ## Installation
