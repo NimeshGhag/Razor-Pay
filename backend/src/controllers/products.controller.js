@@ -28,6 +28,23 @@ const createProduct = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const product = await productModel.findOne();
+
+    return res.status(200).json({
+      message: "Product fetched successfully",
+      product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "somthing went wrong",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createProduct,
+  getProduct,
 };
