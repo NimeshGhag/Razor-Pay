@@ -4,8 +4,8 @@ const productRoute = require("./routes/product.route");
 
 const app = express();
 
-app.use("/api/products", productRoute);
-
 app.use(express.json());
+
+app.use("/api/products", productRoute);
 
 module.exports = app;
