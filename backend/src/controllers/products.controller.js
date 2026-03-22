@@ -30,7 +30,7 @@ const createProduct = async (req, res) => {
 
 const getProduct = async (req, res) => {
   try {
-    const product = await productModel.findOne();
+    const product = await productModel.find();
 
     return res.status(200).json({
       message: "Product fetched successfully",

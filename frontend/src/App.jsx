@@ -1,41 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./App.css";
 import ProductCard from "./components/ProductCard";
 
-const sampleProducts = [
-  {
-    id: 1,
-    image:
-      "https://images.unsplash.com/photo-1606813902947-8d7a2f0b7f5a?w=1200&q=80&auto=format&fit=crop",
-    price: { amount: "49.00", currency: "$" },
-    title: "Wireless Headphones",
-    description: "Comfortable over-ear headphones with long battery life.",
-  },
-  {
-    id: 2,
-    image:
-      "https://images.unsplash.com/photo-1526178615308-5e3a9d6d4f8b?w=1200&q=80&auto=format&fit=crop",
-    price: { amount: "24.50", currency: "$" },
-    title: "Minimalist Wallet",
-    description: "Slim leather wallet to carry essentials without bulk.",
-  },
-  {
-    id: 3,
-    image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=80&auto=format&fit=crop",
-    price: { amount: "89.99", currency: "$" },
-    title: "Smart Watch",
-    description: "Track workouts, notifications, and heart rate all day.",
-  },
-];
+
 
 const App = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const handleBuy = (product) => {
     console.log("Purchasing:", product);
     alert(
-      `Purchased ${product.title} for ${product.price.currency}${product.price.amount}. Thank you!`,
+      `Purchased ${product.title} for ${product.price.currency}${product.price.amount/100}. Thank you!`,
     );
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await axios.get(
+          "http://localhost:3000/api/products/product",
+        );
+        const p = res.data && res.data.product;
+        if (p) setProducts(Array.isArray(p) ? p : [p]);
+        console.log("Fetched products:", p);
+      } catch (err) {
+        setError(err.message || "Failed to fetch products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="app-shell">
@@ -44,9 +45,13 @@ const App = () => {
       </header>
 
       <main className="product-grid">
-        {sampleProducts.map((p) => (
-          <ProductCard key={p.id} product={p} onBuy={handleBuy} />
-        ))}
+        {loading && <p>Loading products...</p>}
+        {error && <p style={{ color: "red" }}>Error: {error}</p>}
+        {!loading &&
+          !error &&
+          products.map((p) => (
+            <ProductCard key={p._id || p.id} product={p} onBuy={handleBuy} />
+          ))}
       </main>
     </div>
   );
