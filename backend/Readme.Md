@@ -1,29 +1,25 @@
-# Backend API for Razorpay Integration
+# Backend — Razorpay Integration
 
-A Node.js backend application for managing products and integrating with Razorpay payment gateway.
+This folder contains the Node.js / Express backend for the Razorpay demo project. It provides simple product management and payment order creation/verification using Razorpay.
 
-## Features
+## Key features
 
-- Product management (create and retrieve products)
-- MongoDB database integration
-- RESTful API endpoints
-- CORS enabled for cross-origin requests
-- Environment-based configuration
+- Create and fetch products (MongoDB)
+- Create Razorpay orders and verify payments
+- JSON REST API with CORS enabled
 
-## Tech Stack
+## Tech stack
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB with Mongoose ODM
-- **CORS**: cors middleware for cross-origin resource sharing
-- **Environment**: dotenv for configuration
+- Node.js + Express
+- MongoDB with Mongoose
+- Razorpay official SDK
+- dotenv for configuration
 
-## Installation
+## Quick start
 
-1. Clone the repository:
+1. Open the backend folder:
 
    ```bash
-   git clone <repository-url>
    cd backend
    ```
 
@@ -33,75 +29,103 @@ A Node.js backend application for managing products and integrating with Razorpa
    npm install
    ```
 
-3. Create a `.env` file in the root directory and add the following environment variables:
+3. Create a `.env` file in `backend/` with the required variables (example below).
 
-   ```
-   PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/razorpay-backend
-   ```
+4. Start the dev server:
 
-4. Start the development server:
    ```bash
    npm run dev
    ```
 
-## Usage
+## Environment variables
 
-The server will start on the port specified in the `.env` file (default: 3000).
+Add these to your `.env` file in `backend/`:
 
-## API Endpoints
+```
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/razorpay-backend
+RAZORPAY_KEY_ID=your_key_id
+RAZORPAY_KEY_SECRET=your_key_secret
+```
 
-### Products
+## NPM scripts
 
-- **POST** `/api/products`
-  - Create a new product
-  - Request Body:
+- `npm run dev` — start server with `nodemon` (development)
+- `npm start` — start server with `node` (production)
+
+## API Reference
+
+Base URL: `http://localhost:<PORT>/api`
+
+Products
+
+- POST `/api/products` — Create a new product
+  - Example request body:
+
     ```json
     {
-      "image": "product-image-url",
+      "image": "https://...",
       "title": "Product Title",
       "description": "Product Description",
-      "price": {
-        "amount": 100,
-        "currency": "INR"
-      }
+      "price": { "amount": 10000, "currency": "INR" }
     }
     ```
-  - Response: Product object with success message
 
-- **GET** `/api/products/product`
-  - Retrieve a product
-  - Response: Product object with success message
+- GET `/api/products/product` — Fetch products (returns array)
 
-## Scripts
+Payments
 
-- `npm start`: Start the production server
-- `npm run dev`: Start the development server with nodemon
-- `npm test`: Run tests (not implemented)
+- POST `/api/payments/create-order` — Create a Razorpay order
+  - Creates an order using the first product's price (see `src/controllers/payment.controller.js`).
+  - Response: JSON containing the `order` object returned by Razorpay.
 
-## Project Structure
+- POST `/api/payments/verify` — Verify a payment
+  - Request body expected:
+
+    ```json
+    {
+      "razorpayOrderId": "order_id",
+      "razorpayPaymentId": "payment_id",
+      "signature": "signature"
+    }
+    ```
+
+  - On successful verification the payment record status is updated to `COMPLETED` and the endpoint responds with `{ "status": "success" }`.
+
+## Implementation notes
+
+- Routes are mounted in `src/app.js`:
+  - Products: `/api/products` (see [src/app.js](src/app.js#L8-L12))
+  - Payments: `/api/payments` (see [src/app.js](src/app.js#L8-L12))
+- Razorpay keys are read from `process.env.RAZORPAY_KEY_ID` and `process.env.RAZORPAY_KEY_SECRET`.
+- Payment verification uses Razorpay's `validatePaymentVerification` utility and stores payment records in the `payment` collection.
+
+## Project structure
 
 ```
 backend/
-├── src/
-│   ├── app.js                 # Express app setup
-│   ├── db/
-│   │   └── db.js              # Database connection
-│   ├── models/
-│   │   └── product.models.js  # Product schema
-│   ├── controllers/
-│   │   └── products.controller.js # Product controllers
-│   └── routes/
-│       └── product.route.js   # Product routes
-├── server.js                  # Server entry point
-├── package.json
-└── Readme.Md
+├─ src/
+│  ├─ app.js                # Express app and routes
+│  ├─ db/db.js              # MongoDB connection
+│  ├─ controllers/
+│  │  ├─ products.controller.js
+│  │  └─ payment.controller.js
+│  ├─ models/
+│  │  ├─ product.models.js
+│  │  └─ payment.model.js
+│  └─ routes/
+│     ├─ product.route.js
+│     └─ payment.routes.js
+├─ server.js
+├─ package.json
+└─ Readme.Md
 ```
 
 ## Contributing
 
-1. Fork the repository
+1. Fork the repo
 2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+3. Commit and push
+4. Open a pull request
+
+If you want, I can also add example `.env.example` and a short curl/postman collection for quick testing.
