@@ -1,6 +1,7 @@
 import React from "react";
 import "../App.css";
 import "./ProductCard.css";
+import PaymentButton from "./paymentButton";
 
 const ProductCard = ({ product, onBuy }) => {
   const {  price, title, description } = product;
@@ -19,9 +20,7 @@ const ProductCard = ({ product, onBuy }) => {
               {price.currency} {price.amount/100}
             </span>
           </div>
-          <button className="buy-btn" onClick={() => onBuy(product)}>
-            Buy Now
-          </button>
+          <PaymentButton onClick={onBuy} />
         </div>
       </div>
     </article>

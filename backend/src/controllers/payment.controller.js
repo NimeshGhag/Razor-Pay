@@ -24,11 +24,12 @@ const createOrder = async (req, res) => {
 
     const newPayment = await paymentModel.create({
       orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
+      price: {
+        amount: order.amount,
+        currency: order.currency,
+      },
       status: "PENDING",
     });
-    
   } catch (error) {
     res.status(500).json({
       message: "failed to create order",
